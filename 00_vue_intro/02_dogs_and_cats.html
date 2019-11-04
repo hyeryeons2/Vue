@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!-- 도움되는 콘솔 경고를 포함한 개발 버전 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- axios -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Dogs and Cats</title>
+  <style>
+    .animalImg {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="alert alert-warning" role="alert">Get Random Dog and Cat Imgs!</div>
+  <div id="app">
+    <!-- btn 누를 때마다 getDogImg 가져오는 함수 실행됨 -->
+    <button class="btn btn-primary" v-on:click="getDogImg()">멍멍이</button> 
+    <button class="btn btn-success" v-on:click="getCatImg()">고양이</button><br>
+    
+    <img class="animalImg" v-bind:src="dogImg" alt="멍멍" rounded="circle"><!--v-bind:src 대신 :src 가능 -->
+    <img class="animalImg" v-bind:src="catImg" alt="야옹" rounded="circle">
+  </div>
+
+  <script>
+    // ★★★★★★
+    // 1. Vue instance에 함수를 """정의할 때"""에는 function 키워드를 사용함
+    // -> 그렇게 해야 정의된 함수의 this 가 vue instance를 가리킴
+    // 2. Vue instance에 정의된 함수 내에서 """callback 함수 사용할 때""" arrow function을 사용한다.
+    // -> 그렇게 해야 정의된 함수의 this 가 vue instance를 가리킴
+    const app = new Vue({ 
+      el: '#app', 
+      data: {
+        dogImg: '',
+        catImg: '',
+  
+      },
+      methods : {
+        getDogImg: function () {
+          const API_URL = 'https://dog.ceo/api/breeds/image/random'
+          // API URL로 요청 보내 응답받은 강아지 사진 URL을 Vue 인스턴스의 dogImg
+          // data 값에 할당한다.
+          axios.get(API_URL)
+          .then(response => {  // funcion이 아닌 => 로 적용해 줘야 출력됨
+            const dogImg = response.data.message
+            // this 는 vue의 모든 속성 알 수 있음 app.getDogImg() 하면 알 수 있음
+            // this dogImg = response.data.message 한줄로도 가능함
+            this.dogImg = dogImg
+            // console.log(this)
+            })
+          }, 
+        getCatImg: function() {
+          const API_URL = 'https://api.thecatapi.com/v1/images/search'
+          // axios 에서 콜백함수 정의할 때에는 arrow function 사용
+          axios.get(API_URL)
+          .then(response => {
+            // console.log(response)
+            const catImg = response.data[0].url
+            // console.log(catImg)
+            this.catImg = catImg            
+          })
+        }
+      },
+      // 최초 vue 인스턴스 생성된 후, 실행하는 함수(엑박 대신 바로 멍멍이, 고양이 사진이 뜸)
+      created: function() {
+        this.getCatImg()
+        this.getDogImg()
+      }  
+      })
+  </script>
+</body>
+</html>

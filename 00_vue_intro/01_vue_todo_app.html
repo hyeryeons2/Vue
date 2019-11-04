@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- 도움되는 콘솔 경고를 포함한 개발 버전 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <title>Vue todo App</title>
+  <style>
+  .completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1 v-bind:style="{ color:activeColor, fontSize: fontSize +'px' }">TODO APP</h1>
+    <ul>
+      <li v-bind:style="{color: activeColor2}" v-bind:class="{ completed:todo.completed}" v-for="todo in todos"> 
+          <!-- <li v-for="todo in todos" v-if="!todo.completed" v-on:click="toggleTodo(todo)"> -->
+        <!-- v-on:click 을 @click으로 바꿀 수 있음 -->
+        <!-- true, false 표현 가능한 것이 checkbox -->
+        <input type="checkbox" v-model="todo.completed">
+        {{ todo.content }}
+        <!-- {{ todo.completed }} -->
+      </li>
+      <!-- <li v-else v-on:click="toggleTodo(todo)">{{ todo.content }}[완료]</li> if, else 무조건 -->
+    </ul>
+    <hr>
+    <label for="todo">오늘의 할일:</label>
+    <!-- input과 1:1 binging: v-model -->
+    <input v-model="newTodo" type="text" v-on:keydown.enter="addTodo" placeholder="여기에 적어주세요." id="todo">  <!-- input 에 내용 넣고 엔터치면 list up -->
+    <footer>
+      <button v-on:click="clearCompleted()">Clear Completed</button>
+    </footer>
+  </div>
+
+  <script>
+  const app = new Vue({
+    el: '#app',
+    data: {  // { } 의미: object 로 시작한다.
+      todos: [
+        {
+          content: '저녁메뉴 고민하기',
+          completed: false,
+        },
+        {
+          content: '사다리타기',
+          completed: false,
+        },
+        {
+          content: '야자하기',
+          completed: false,
+        },
+        {
+          content: '쑤랑 카페가기',
+          completed: false,
+        },
+      ],
+      newTodo: '',
+      activeColor : 'lavender',
+      activeColor2: 'darkgray',
+      fontSize: '70',
+    },
+    methods: {
+      toggleTodo: function(todo) {
+        todo.completed = !todo.completed
+      },
+      addTodo: function() {
+        this.todos.push({
+          content: this.newTodo,  // this.newTodo (input)이 들어가야 하는 것
+          completed: false,
+        })
+        this.newTodo = ''  // input 추가 후 input 창 비우기
+      },
+
+      // 1번 방법
+      // clearCompleted: function() {
+      //   // todo는 console에 찍어보면 index가 출력됨
+      //   const newTodos = []
+      //   for (todo in this.todos) {
+      //     if (!this.todos[todo].completed) {
+      //       newTodos.push(this.todos[todo])
+      //     }
+      //   }
+      //   this.todos = newTodos
+      // },
+
+      // 2번 방법
+      clearCompleted: function() {
+        // todo는 console에 찍어보면 index가 출력됨
+        const newTodos = []
+        for (todo of this.todos) {
+          if (!todo.completed) {
+            newTodos.push(todo)
+          }
+        }
+        this.todos = newTodos
+      },
+
+      // 3번 방법
+      // clearCompleted: function() {
+      //   // todo는 console에 찍어보면 index가 출력됨
+      //   const newTodos = this.todos.filter((todo) => {
+      //     return !todo.completed
+      //   })
+      //   // console.log(newTodos)
+      //   // 할당
+      //   this.todos = newTodos
+      // }, 
+    },
+  })  
+  </script>
+</body>
+</html>
