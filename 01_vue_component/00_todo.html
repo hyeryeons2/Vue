@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Todo</title>
+  <style>
+    h1 {
+      color: skyblue;
+    }
+
+    .todo-list {
+      display: inline-block;
+      width: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="todo-list">
+      <h1> 탈SSAFY </h1>
+      <input type="text" v-model="newTodo" placeholder="할 일을 적어주세요;)">
+      <button @click="addTodo()">+</button>
+      <ul>
+        <li v-for="todo in todos" :key="todo.id">
+          <span>{{ todo.content }}</span>
+          <button @click="removeTodo()">x</button> <!-- filter 쓰려면 @click="removeTodo(target_id)"-->
+        </li>
+      </ul>
+    </div>
+    <div class="todo-list">
+      <h1> SSAFY </h1>
+      <input type="text" v-model="newTodo" placeholder="할 일을 적어주세요;)">
+      <button @click="addTodo()">+</button>
+      <ul>
+        <li v-for="todo in todos" :key="todo.id">
+          <span>{{ todo.content }}</span>
+          <button @click="removeTodo()">x</button> <!-- filter 쓰려면 @click="removeTodo(target_id)"-->
+        </li>
+      </ul>
+    </div>
+    <div class="todo-list">
+      <h1> ETC </h1>
+      <input type="text" v-model="newTodo" placeholder="할 일을 적어주세요;)">
+      <button @click="addTodo()">+</button>
+      <ul>
+        <li v-for="todo in todos" :key="todo.id">
+          <span>{{ todo.content }}</span>
+          <button @click="removeTodo()">x</button> <!-- filter 쓰려면 @click="removeTodo(target_id)"-->
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        todos: [],
+        newTodo: '',
+      },
+      methods: {
+        addTodo: function () {
+          if (this.newTodo) {
+            this.todos.push({
+              id: new Date().getTime(),
+              content: this.newTodo,
+            })
+            this.newTodo = ''
+          }
+        },
+        removeTodo: function () {
+          const newTodos = []
+          for (const todo of this.todos) {
+            if (!todo in this.todos) {
+              this.newTodos.push(todo)
+            }
+            this.todos = newTodos
+          }
+        },
+        // filter 사용해 remove 구현(2)
+        // removeTodo: function(target_id) {
+        // const newTodos = this.todos.filter(todo => {
+        //   return todo.id !== target_id
+        // })
+        // this.todos = newTodos
+        // }
+        // },
+      }
+    })
+  </script>
+</body>
+
+</html>

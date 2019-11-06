@@ -6,6 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <!-- 도움되는 콘솔 경고를 포함한 개발 버전 -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- axios -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <title>Vue todo App</title>
   <style>
   .completed {
@@ -17,8 +19,23 @@
 <body>
   <div id="app">
     <h1 v-bind:style="{ color:activeColor, fontSize: fontSize +'px' }">TODO APP</h1>
+
+    <select v-model="showMode">
+    <option value="all">all</option>
+    <option value="notCompleted">notCompleted</option>
+    <option value="completed">completed</option>
+    </select>
+
     <ul>
-      <li v-bind:style="{color: activeColor2}" v-bind:class="{ completed:todo.completed}" v-for="todo in todos"> 
+      <!-- v-for 통해서 반복문 돌 때에는 v-bind:key를 넣어주세요! -->
+      <li 
+      v-bind:style="{color: activeColor2}" 
+      v-bind:class="{ completed:todo.completed}" 
+      v-for="todo in todoByShowMode" 
+      v-bind:key="todo.id"
+      > 
+      <!-- computed의 todoByShowMode 갖다쓰는 거니까 id인 todoByShowMode로만 쓰면 됨 -->
+      <!--  v-for="todo in todos" 에서 v-for="todo in todoByShowMode()"로 -->
           <!-- <li v-for="todo in todos" v-if="!todo.completed" v-on:click="toggleTodo(todo)"> -->
         <!-- v-on:click 을 @click으로 바꿀 수 있음 -->
         <!-- true, false 표현 가능한 것이 checkbox -->
@@ -32,55 +49,84 @@
     <label for="todo">오늘의 할일:</label>
     <!-- input과 1:1 binging: v-model -->
     <input v-model="newTodo" type="text" v-on:keydown.enter="addTodo" placeholder="여기에 적어주세요." id="todo">  <!-- input 에 내용 넣고 엔터치면 list up -->
+    
     <footer>
       <button v-on:click="clearCompleted()">Clear Completed</button>
     </footer>
+
+    <!-- {{ reversedNewTodo }} -->
+  
   </div>
 
   <script>
+  // todo_list 만들 때 데이터 저장하고 싶다..
+  const STORAGE_KEY = 'vue-todos'
+  const todoStorage = {
+    // 데이터 불러오는 작업
+    fetch: function() {
+      // string 에서 array로 만드는 과정
+      return JSON.parse(localStorage.getItem(STORAGE_KEY))
+    },
+    // 데이터 저장하는 작업 todos 목록 넘겨주면 storage에 넘겨줌
+    save: function(todos) {
+      // array 에서 string으로 만드는 과정
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+    },
+  }  
+
   const app = new Vue({
     el: '#app',
     data: {  // { } 의미: object 로 시작한다.
       todos: [
-        {
-          content: '저녁메뉴 고민하기',
-          completed: false,
-        },
-        {
-          content: '사다리타기',
-          completed: false,
-        },
-        {
-          content: '야자하기',
-          completed: false,
-        },
-        {
-          content: '쑤랑 카페가기',
-          completed: false,
-        },
+        // {
+        //   id: 1, 
+        //   content: '저녁메뉴 고민하기',
+        //   completed: false,
+        // },
+        // {
+        //   id: 2, 
+        //   content: '사다리타기',
+        //   completed: false,
+        // },
+        // {
+        //   id: 3, 
+        //   content: '야자하기',
+        //   completed: false,
+        // },
+        // {
+        //   id: 4,
+        //   content: '쑤랑 카페가기',
+        //   completed: false,
+        // },
       ],
       newTodo: '',
+      // css
       activeColor : 'lavender',
       activeColor2: 'darkgray',
       fontSize: '70',
+      // Show mode
+      showMode : 'all',
     },
     methods: {
-      toggleTodo: function(todo) {
-        todo.completed = !todo.completed
-      },
+      // toggleTodo: function(todo) {
+      //   todo.completed = !todo.completed
+      // },
       addTodo: function() {
+        if (this.newTodo) {
         this.todos.push({
+          id: new Date().getTime(),
           content: this.newTodo,  // this.newTodo (input)이 들어가야 하는 것
           completed: false,
         })
-        this.newTodo = ''  // input 추가 후 input 창 비우기
+        this.newTodo = '' // input 추가 후 input 창 비우기
+        } 
       },
-
+      
       // 1번 방법
       // clearCompleted: function() {
       //   // todo는 console에 찍어보면 index가 출력됨
       //   const newTodos = []
-      //   for (todo in this.todos) {
+        // for (const todo in this.todos) {
       //     if (!this.todos[todo].completed) {
       //       newTodos.push(this.todos[todo])
       //     }
@@ -92,7 +138,7 @@
       clearCompleted: function() {
         // todo는 console에 찍어보면 index가 출력됨
         const newTodos = []
-        for (todo of this.todos) {
+        for (const todo of this.todos) {
           if (!todo.completed) {
             newTodos.push(todo)
           }
@@ -110,6 +156,44 @@
       //   // 할당
       //   this.todos = newTodos
       // }, 
+
+    },
+    computed: {
+      // showMode에 따라 todolist를 새롭게 반환    
+      // showMode가 바뀔때만 함수 실행됨
+      todoByShowMode: function() {
+        // 완료되지 않은 애들만 본다
+        if (this.showMode === 'notCompleted') {
+          return this.todos.filter(todo => {
+            return !todo.completed
+          })
+        } else if (this.showMode === 'completed') {
+          return this.todos.filter(todo => {
+            return todo.completed
+          })
+        } else { // === 'all'
+          return this.todos
+        }
+      },
+      // reversedNewTodo: function () {
+      //   return this.newTodo.split('').reverse().join('')
+      // }
+    },
+    created() {
+      // View instance가 생성되면 실행하는 함수
+      this.todos = todoStorage.fetch()
+    },
+    watch: {
+      // 특정 데이터가 바뀔 때마다 실행하는 함수를 정의하는 곳
+      todos: {   // todos라는 데이터가 바뀔 때마다
+        handler: function() {  // handler 함수 실행
+          todoStorage.save(this.todos)
+        },
+        deep: true,  // object 의 nested item 도 감시할 지 유무
+      },
+      newTodo() {
+        console.log(123)
+      }
     },
   })  
   </script>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- 도움되는 콘솔 경고를 포함한 개발 버전 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- axios -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // # 요청 성공 case
+    // 비동기 작업 수행 시 사용하는 객체
+    // 성공하면 `.then` 구문으로, 실패하면 `.catch` 구문으로
+    // 서버 켜고 axios.get(API_URL) 확인하면 promise 가 나오고 promisestatus 가 resolved임을 알 수 있음
+    const API_URL = 'https://dog.ceo/api/breeds/image/random'
+    axios.get(API_URL) // Promise <resolved> === 응답을 성공적으로 받음(get이 promise 반환한다)
+      .then(response => {  // Promise 의 value를 .then 메서드로 풀어준다.
+        console.log(response)
+      })
+      .catch(error => {  // 만약 Promise 가 rejected 라면(요청 실패) then 실행하지 않고 catch로 바로 감
+        console.error(error)
+      })
+    
+    // # 요청 실패 case
+    // const BAD_API_URL = 'https://dog.ceo/api/breeds/image/rando'
+    // axios.get(BAD_API_URL)  // Promise <rejected>
+    //   .catch(error => {
+    //     console.error(error)
+    //   })
+  </script>
+</body>
+</html>

@@ -44,18 +44,29 @@
   
       },
       methods : {
-        getDogImg: function () {
+        // 원래 작업
+        // getDogImg: function () {
+        //   const API_URL = 'https://dog.ceo/api/breeds/image/random'
+        //   // API URL로 요청 보내 응답받은 강아지 사진 URL을 Vue 인스턴스의 dogImg
+        //   // data 값에 할당한다.
+        //   axios.get(API_URL)
+        //   .then(response => {  // funcion이 아닌 => 로 적용해 줘야 출력됨
+        //     const dogImg = response.data.message
+        //     // this 는 vue의 모든 속성 알 수 있음 app.getDogImg() 하면 알 수 있음
+        //     // this dogImg = response.data.message 한줄로도 가능함
+        //     this.dogImg = dogImg
+        //     // console.log(this)
+        //     })
+        //   }, 
+
+
+        // getDogImg를 async, await 써서 구현해보자!
+        // async, await ; 동기적으로 작동하기 위한 것
+        getDogImg: async function () {
           const API_URL = 'https://dog.ceo/api/breeds/image/random'
-          // API URL로 요청 보내 응답받은 강아지 사진 URL을 Vue 인스턴스의 dogImg
-          // data 값에 할당한다.
-          axios.get(API_URL)
-          .then(response => {  // funcion이 아닌 => 로 적용해 줘야 출력됨
-            const dogImg = response.data.message
-            // this 는 vue의 모든 속성 알 수 있음 app.getDogImg() 하면 알 수 있음
-            // this dogImg = response.data.message 한줄로도 가능함
-            this.dogImg = dogImg
-            // console.log(this)
-            })
+          const response = await axios.get(API_URL) // await === .then, axios.get(API_URL) === promise
+          // .then으로 받아서 해야 하는데 await 써서 기다렸다가 받을게
+          this.dogImg = response.data.message
           }, 
         getCatImg: function() {
           const API_URL = 'https://api.thecatapi.com/v1/images/search'
