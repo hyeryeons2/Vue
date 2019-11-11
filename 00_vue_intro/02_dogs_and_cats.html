@@ -22,10 +22,15 @@
 <body>
   <div class="alert alert-warning" role="alert">Get Random Dog and Cat Imgs!</div>
   <div id="app">
+    <select class="pic_numbers" v-model="selectednumber">
+      <option v-for="number of numbers">{{ number }}</option>
+    </select>
     <!-- btn 누를 때마다 getDogImg 가져오는 함수 실행됨 -->
     <button class="btn btn-primary" v-on:click="getDogImg()">멍멍이</button> 
     <button class="btn btn-success" v-on:click="getCatImg()">고양이</button><br>
-    
+    <div v-for="dog in dogImg">
+        <img class="animalImg" v-bind:src="dog" alt="멍멍" rounded="circle">
+    </div>
     <img class="animalImg" v-bind:src="dogImg" alt="멍멍" rounded="circle"><!--v-bind:src 대신 :src 가능 -->
     <img class="animalImg" v-bind:src="catImg" alt="야옹" rounded="circle">
   </div>
@@ -39,9 +44,11 @@
     const app = new Vue({ 
       el: '#app', 
       data: {
-        dogImg: '',
+        dogImg: [],
         catImg: '',
-  
+        numbers: [2, 3, 4, 5, 6, 7, 8, 9],
+        selectednumber: '',
+
       },
       methods : {
         // 원래 작업
@@ -63,10 +70,11 @@
         // getDogImg를 async, await 써서 구현해보자!
         // async, await ; 동기적으로 작동하기 위한 것
         getDogImg: async function () {
-          const API_URL = 'https://dog.ceo/api/breeds/image/random'
+          const API_URL = `https://dog.ceo/api/breeds/image/random/${this.selectednumber}`
           const response = await axios.get(API_URL) // await === .then, axios.get(API_URL) === promise
           // .then으로 받아서 해야 하는데 await 써서 기다렸다가 받을게
           this.dogImg = response.data.message
+          console.log(response.data.message)
           }, 
         getCatImg: function() {
           const API_URL = 'https://api.thecatapi.com/v1/images/search'
